@@ -38,6 +38,13 @@ uv run uvicorn rag_api.main:app --reload
 
 All six quality commands must pass before every commit (CI runs the same list).
 
+## Token & context efficiency
+
+- Keep this file lean (< 200 lines); depth lives on demand in `docs/workflow/` — see
+  `docs/workflow/token-efficiency.md` for the full playbook.
+- Run noisy codebase research in subagents; keep the main context for implementation.
+- Don't restate what ruff/mypy/pre-commit/CI already enforce.
+
 ## Conventions
 
 - Conventional Commits (`feat(api):`, `chore:`, `docs:`, `test(evals):`, ...); small commits,
