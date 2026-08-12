@@ -1,0 +1,8 @@
+{"question": "What is a port in hexagonal architecture?", "relevant_document_ids": ["architecture-01"]}
+{"question": "What is an adapter and how is it wired into the application core?", "relevant_document_ids": ["architecture-01"]}
+{"question": "Why should graph state contain workflow data instead of infrastructure objects?", "relevant_document_ids": ["architecture-01"]}
+{"question": "How does retrieval-augmented generation ground an answer?", "relevant_document_ids": ["rag-basics-01"]}
+{"question": "Should citations expose raw chunk text to clients?", "relevant_document_ids": ["rag-basics-01"]}
+{"question": "How is retrieval quality measured with recall at k and mean reciprocal rank?", "relevant_document_ids": ["evals-01"]}
+{"question": "What belongs in a golden dataset for retrieval evals?", "relevant_document_ids": ["evals-01"]}
+{"question": "Which checks do input guardrails run before retrieval, such as prompt injection patterns?", "relevant_document_ids": ["guardrails-01"]}
