@@ -7,7 +7,9 @@ that points here.
 ## Steps
 
 1. Read the roadmap table in `README.md` and the previous practice log in `docs/practices/`
-   to understand what seam practice N plugs into.
+   to understand what seam practice N plugs into. Run any deeper codebase research in a
+   subagent so the main context stays clean for implementation
+   (see [token-efficiency.md](token-efficiency.md)).
 2. Create `docs/practices/practice-NN-<slug>.md` with these sections:
    - **Timebox** — one focused session; state it and honor it.
    - **Focus** — the mission area(s) and key technologies from the roadmap row.
