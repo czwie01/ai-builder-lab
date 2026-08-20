@@ -52,5 +52,8 @@ All six quality commands must pass before every commit (CI runs the same list).
 - Tests: unit tests use hand-rolled fakes (never adapters); API tests use `TestClient`;
   anything needing services or secrets goes behind a pytest marker.
 - Practice workflow: `docs/workflow/practice-scaffold.md` to start one,
-  `docs/workflow/practice-review.md` to grade one. Slash-command adapters for Claude Code
-  live in `.claude/commands/`; mirror them into your own tool's command directory if needed.
+  `docs/workflow/practice-review.md` to grade one. Both are exposed as portable Agent Skills
+  in `.claude/skills/` (symlinked at `.agents/skills`), with thin command adapters in
+  `.claude/commands/` and `.opencode/command/` — layout in `docs/workflow/agent-tooling.md`.
+- Roadmap technology defaults live in `docs/adr/ADR-003-roadmap-v2.md`; confirm or
+  consciously deviate (with an ADR) when implementing a practice.

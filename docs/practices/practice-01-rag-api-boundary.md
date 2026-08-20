@@ -55,7 +55,7 @@ without contaminating the domain model?*
 `X-Request-ID`, stores it in a `contextvars.ContextVar`, and emits a JSON access log with
 `request_id`, `method`, `path`, `status`, and `latency_ms`. The JSON log formatter reads the
 same contextvar, so any log line anywhere in the request path is correlated — while
-`domain/`, `ports/`, and `application/` contain zero observability code. Practice 07 upgrades
+`domain/`, `ports/`, and `application/` contain zero observability code. Practice 08 upgrades
 this edge to OpenTelemetry without touching the core.
 
 ## What I'd do differently

@@ -1,6 +1,6 @@
 """Baseline input guardrail: cheap, deterministic checks at the boundary.
 
-Practice 05 replaces this adapter with richer policies; the port and the
+Practice 06 replaces this adapter with richer policies; the port and the
 use case stay untouched.
 """
 

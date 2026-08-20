@@ -26,7 +26,7 @@ flowchart LR
     subgraph Delivery
         HTTP["FastAPI route<br/>POST /api/v1/answers"]
         CLI["rag-ask CLI"]
-        MCP["MCP tool<br/>(Practice 09)"]
+        MCP["MCP tool<br/>(Practice 10)"]
     end
 
     subgraph Core["Application core (no framework imports)"]
@@ -38,7 +38,7 @@ flowchart LR
 
     subgraph Adapters
         A1["InMemoryRetriever<br/>→ Qdrant (Practice 02)"]
-        A2["BasicQuestionGuard<br/>→ policies (Practice 05)"]
+        A2["BasicQuestionGuard<br/>→ policies (Practice 06)"]
         A3["DeterministicComposer<br/>→ LLM, any vendor (Practice 03)"]
     end
 
@@ -83,19 +83,32 @@ response carries an `X-Request-ID` for correlation.
 
 ## Roadmap
 
+**Product track** — every practice plugs into a seam created in Practice 01; every
+retrieval- or generation-affecting change is gated by the eval suite. (Decisions and sources:
+[ADR-003](docs/adr/ADR-003-roadmap-v2.md).)
+
 | # | Practice | Mission area | Key tech | Status |
 |---|----------|--------------|----------|--------|
 | 01 | [Clean RAG API boundary](docs/practices/practice-01-rag-api-boundary.md) | Software architecture | FastAPI, DI, ports & adapters | ✅ done |
-| 02 | Real vector retrieval | Infrastructure | Qdrant, docker-compose, fastembed | ⬜ planned |
-| 03 | LLM answer generation | AI engineering | Provider-agnostic `AnswerComposer` adapters (Anthropic, OpenAI), prompt files | ⬜ planned |
-| 04 | Evals as a CI gate | Evals | RAG triad; framework ADR (DeepEval / Inspect / promptfoo vs pytest-native) | ⬜ planned |
-| 05 | Guardrails | Guardrails | Input/output policies, injection defense, red-team suite, `AnswerGuard` port | ⬜ planned |
-| 06 | Agent orchestration | Agents | Retrieve→grade→rewrite→compose graph; ADR: LangGraph vs Pydantic AI | ⬜ planned |
-| 07 | Observability | Observability | OpenTelemetry tracing, Jaeger | ⬜ planned |
-| 08 | Chat UI | UI/UX | SSE streaming frontend, built with the open-source Impeccable design skill | ⬜ planned |
-| 09 | MCP server | Agent interop | Same use case exposed as an MCP tool — third delivery mechanism | ⬜ planned |
+| 02 | Vector retrieval with Qdrant | Infrastructure | Qdrant, docker-compose, fastembed (offline/CPU), `TextEmbedder` port, structure-aware chunking, payload indexes | ⬜ planned |
+| 03 | LLM answer generation | AI engineering | Provider-agnostic `AnswerComposer` adapters (Anthropic tool-use, OpenAI strict JSON schema), validation-retry, prompt caching, fallback decorator | ⬜ planned |
+| 04 | Evals as a CI gate | Evals | RAG triad (faithfulness via claim decomposition, answer relevance), `JudgeModel` port, VCR-recorded judge calls for offline CI, golden-set growth | ⬜ planned |
+| 05 | Advanced retrieval | AI engineering | Hybrid search (BM25/miniCOIL + RRF), metadata filtering, `Reranker` port (local + hosted), contextual retrieval, quantization/MRL — each step an eval delta | ⬜ planned |
+| 06 | Guardrails | Guardrails | OWASP GenAI LLM Top 10 2026 threat model, `AnswerGuard`/`ContextGuard` ports, Presidio PII, chunk-level injection scanning, groundedness gate, promptfoo red-team in CI | ⬜ planned |
+| 07 | Agent orchestration | Agents | Agentic RAG (routing → retrieval-as-tool → judge-gated re-retrieval); Pydantic AI behind a port; ADR vs LangGraph / vendor SDKs | ⬜ planned |
+| 08 | Observability | Observability | OpenTelemetry gen_ai.* semconv, RAG-shaped spans, token/cost metrics, Arize Phoenix backend, eval–trace linkage | ⬜ planned |
+| 09 | Chat frontend | UI/UX | React + Vite + TS SPA, @hey-api/openapi-ts + Zod 4 codegen, POST + fetch-SSE streaming, assistant-ui; ADR: SPA vs monolith | ⬜ planned |
+| 10 | MCP server | Agent interop | FastMCP, Streamable HTTP (2026-07-28 spec), structured tool outputs, OAuth 2.1, MCP threat model — third delivery mechanism | ⬜ planned |
+| 11 | LLM Wiki knowledge base | Knowledge mgmt | Agent-curated markdown wiki (raw/ + wiki/ + lint), hybrid retrieval over it, graph retrieval only if a multi-hop eval slice proves it, file-based memory port | ⬜ planned |
 
-Each practice plugs into a seam created in Practice 01. That is the point.
+**Engineering track** — the tooling ("harness engineering") layer, evolving in parallel; see
+[docs/workflow/agent-tooling.md](docs/workflow/agent-tooling.md):
+
+| # | Step | Status |
+|---|------|--------|
+| E1 | AGENTS.md canonical + CLAUDE.md symlink + thin command adapters | ✅ done |
+| E2 | Practice workflows as portable Agent Skills (`.claude/skills/`, `.agents/skills` symlink, OpenCode mirrors) | ✅ done |
+| E3 | Per-skill evals in CI; plugin packaging once ≥2 reusable skills exist | ⬜ planned |
 
 ## Repo map
 
