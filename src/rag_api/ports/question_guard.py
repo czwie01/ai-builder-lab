@@ -1,4 +1,4 @@
-"""Input guardrail port. Adapters: basic heuristics (Practice 01), richer policies (Practice 05)."""
+"""Input guardrail port. Adapters: basic heuristics (Practice 01), richer policies (Practice 06)."""
 
 from typing import Protocol
 

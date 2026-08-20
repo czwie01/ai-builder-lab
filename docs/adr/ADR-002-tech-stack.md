@@ -21,7 +21,7 @@ Python AI services, while every choice stays swappable behind the architecture o
 | Settings | **pydantic-settings** | Typed configuration from the environment (`RAG_API_` prefix). |
 | Errors | **RFC 9457 problem details** | One machine-readable error shape for validation, guardrail, and unexpected failures. |
 | Tests | **pytest + httpx/TestClient** | Async-native; evals are ordinary tests behind a marker. |
-| Logging | **stdlib JSON formatter** | Deliberately no structlog/OTel yet — observability is Practice 07; today's contextvar-based request-ID correlation is enough. |
+| Logging | **stdlib JSON formatter** | Deliberately no structlog/OTel yet — observability is Practice 08; today's contextvar-based request-ID correlation is enough. |
 | CI | **GitHub Actions + astral-sh/setup-uv** | Lint, format check, mypy, tests, and eval gate on every push. No secrets required. |
 
 ## Deliberate deferrals

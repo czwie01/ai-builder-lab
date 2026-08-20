@@ -51,7 +51,7 @@ pasting knowledge into the always-loaded instruction file.
 
 ### 5. Platform-level context management (for the agents we build)
 
-The same discipline applies inside this lab's own roadmap. When Practices 06 and 09 build
+The same discipline applies inside this lab's own roadmap. When Practices 07 and 10 build
 agent workflows, use the platform primitives instead of hand-rolling them:
 
 - **Context editing** — server-side clearing of stale tool results

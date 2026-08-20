@@ -42,5 +42,5 @@ Adopt ports & adapters (hexagonal architecture):
 - The use case runs identically under HTTP, CLI (`rag-ask`), and — later — MCP.
 - Cost: more files and a little indirection than a "FastAPI route calls the client directly"
   style. Accepted: the indirection **is** the practice.
-- Guardrails and answer composition are ports from day one, so Practices 03 and 05 replace
+- Guardrails and answer composition are ports from day one, so Practices 03 and 06 replace
   adapters, not seams.
