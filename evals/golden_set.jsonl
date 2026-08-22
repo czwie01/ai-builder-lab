@@ -1,8 +1,25 @@
-{"question": "What is a port in hexagonal architecture?", "relevant_document_ids": ["architecture-01"]}
-{"question": "What is an adapter and how is it wired into the application core?", "relevant_document_ids": ["architecture-01"]}
-{"question": "Why should graph state contain workflow data instead of infrastructure objects?", "relevant_document_ids": ["architecture-01"]}
-{"question": "How does retrieval-augmented generation ground an answer?", "relevant_document_ids": ["rag-basics-01"]}
-{"question": "Should citations expose raw chunk text to clients?", "relevant_document_ids": ["rag-basics-01"]}
-{"question": "How is retrieval quality measured with recall at k and mean reciprocal rank?", "relevant_document_ids": ["evals-01"]}
-{"question": "What belongs in a golden dataset for retrieval evals?", "relevant_document_ids": ["evals-01"]}
-{"question": "Which checks do input guardrails run before retrieval, such as prompt injection patterns?", "relevant_document_ids": ["guardrails-01"]}
+{"question": "How can I swap out a database client without rewriting business logic?", "relevant_document_ids": ["hexagonal-architecture"]}
+{"question": "Where should the wiring between interfaces and their implementations live?", "relevant_document_ids": ["hexagonal-architecture"]}
+{"question": "Why prefer a Protocol over inheriting from a base class for an interface?", "relevant_document_ids": ["hexagonal-architecture"]}
+{"question": "What makes fast-moving machine learning infrastructure cheaper to absorb?", "relevant_document_ids": ["hexagonal-architecture"]}
+{"question": "Why does giving a model source passages reduce invented facts?", "relevant_document_ids": ["retrieval-augmented-generation"]}
+{"question": "Should the service hand back raw source text or only references to it?", "relevant_document_ids": ["retrieval-augmented-generation"]}
+{"question": "Why not index an entire file as a single unit?", "relevant_document_ids": ["retrieval-augmented-generation"]}
+{"question": "What does the language model contribute compared with the fetched material?", "relevant_document_ids": ["retrieval-augmented-generation"]}
+{"question": "How do I tell whether a change to search made things worse?", "relevant_document_ids": ["retrieval-evaluation"]}
+{"question": "Which number says how many of the right sources appear in the top few results?", "relevant_document_ids": ["retrieval-evaluation"]}
+{"question": "Which measure rewards putting the best hit in first position?", "relevant_document_ids": ["retrieval-evaluation"]}
+{"question": "When is it acceptable to move a passing score in the build?", "relevant_document_ids": ["retrieval-evaluation"]}
+{"question": "Why is a very small collection a poor basis for judging quality?", "relevant_document_ids": ["retrieval-evaluation"]}
+{"question": "How do I stop someone telling the assistant to disregard what it was told?", "relevant_document_ids": ["input-guardrails"]}
+{"question": "Why cap how long a submitted question is allowed to be?", "relevant_document_ids": ["input-guardrails"]}
+{"question": "What damage can null bytes or escape sequences do further down?", "relevant_document_ids": ["input-guardrails"]}
+{"question": "At what point in the pipeline should bad input be turned away?", "relevant_document_ids": ["input-guardrails"]}
+{"question": "How do I follow every log line belonging to a single call?", "relevant_document_ids": ["observability"]}
+{"question": "How is timing collected without putting tracing code in business logic?", "relevant_document_ids": ["observability"]}
+{"question": "Why emit machine-readable records instead of prose sentences?", "relevant_document_ids": ["observability"]}
+{"question": "What is worth measuring once a language model sits in the request path?", "relevant_document_ids": ["observability"]}
+{"question": "How can a question match a passage that shares none of its words?", "relevant_document_ids": ["vector-search"]}
+{"question": "What does the angle between two arrays of numbers tell you?", "relevant_document_ids": ["vector-search"]}
+{"question": "Why keep lexical matching around when semantic search exists?", "relevant_document_ids": ["vector-search"]}
+{"question": "What gets stored next to the numeric arrays so results can be filtered later?", "relevant_document_ids": ["vector-search"]}
