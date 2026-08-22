@@ -17,6 +17,7 @@ dependencies = [
 
 [project.scripts]
 rag-ask = "rag_api.cli:main"
+rag-ingest = "rag_api.ingest_cli:main"
 
 [dependency-groups]
 dev = [
