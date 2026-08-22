@@ -70,3 +70,12 @@ class EmbeddedChunk:
 
     chunk: DocumentChunk
     vector: tuple[float, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SourceDocument:
+    """A document before chunking: what an ingest run reads from a corpus."""
+
+    document_id: str
+    source_path: str
+    text: str
