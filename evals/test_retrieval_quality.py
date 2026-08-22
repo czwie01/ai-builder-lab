@@ -37,13 +37,13 @@ K = 3
 TERM_OVERLAP_RECALL_THRESHOLD = 0.80
 TERM_OVERLAP_MRR_THRESHOLD = 0.75
 
-# PROVISIONAL. The embedding model cannot be downloaded in every
-# environment, so these were not measured before being written: they are
-# set low on purpose, below the lexical baseline, so the first run
-# reports real numbers instead of failing on a guess. The follow-up
-# commit replaces them with the observed values.
-DENSE_RECALL_THRESHOLD = 0.60
-DENSE_MRR_THRESHOLD = 0.55
+# Measured in CI on the frozen corpus (the model cannot be fetched in
+# every environment): recall@3 = 1.000, MRR = 0.953, 0 misses out of 25.
+# The thresholds sit one miss below perfect rather than *at* it — a gate
+# that demands 8/8 is how the Practice 01 gate became brittle. int8 ONNX
+# is also not bit-reproducible across CPUs, so some margin is required.
+DENSE_RECALL_THRESHOLD = 0.95
+DENSE_MRR_THRESHOLD = 0.90
 
 # CI sets this so a missing model fails the gate instead of skipping it.
 REQUIRE_DENSE = os.environ.get("RAG_API_EVAL_REQUIRE_DENSE") == "1"

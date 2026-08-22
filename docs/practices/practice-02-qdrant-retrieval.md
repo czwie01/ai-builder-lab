@@ -62,17 +62,23 @@ nothing to prove.
 | Retriever | recall@3 | MRR | misses |
 |---|---|---|---|
 | term overlap (Practice 01) | 0.840 | 0.793 | 4 / 25 |
-| dense (bge-small-en-v1.5) | *pending first CI run* | | |
+| dense (bge-small-en-v1.5) | **1.000** | **0.953** | **0 / 25** |
+
+Embeddings answer every question, including all four the paraphrasing defeated — for example
+"Why cap how long a submitted question is allowed to be?", which word overlap sent to the
+observability document because it shares more vocabulary with it than with the guardrails
+document that actually answers it. That is the entire case for dense retrieval, measured
+rather than asserted.
 
 Thresholds were set **after** measuring, just below the observed values (0.80 and 0.75),
 leaving room for one more miss before the build fails. They are numerically lower than the old
 0.9/0.8 while testing something far harder — the kind of change that has to be stated out loud
 rather than slipped into a diff.
 
-The dense thresholds are provisional and deliberately set below the lexical baseline: the
-model weights cannot be downloaded in every environment (this one blocks Hugging Face), so
-they were not measured before being written. CI reports the real numbers and a follow-up
-commit replaces them — measure first, then choose, in that order and in that commit sequence.
+The dense thresholds went in provisional, deliberately below the lexical baseline, because the
+model weights cannot be downloaded in every environment (this one blocks Hugging Face). CI
+measured the real numbers and a separate commit replaced them with 0.95 and 0.90 — one miss
+below perfect rather than *at* perfect, which is precisely the trap the old gate fell into.
 
 ## Three test tiers
 
@@ -97,11 +103,18 @@ warns that it ignores payload indexes entirely.
 | Can the ingest pipeline run without FastAPI? | ✅ Yes — `rag-ingest`, a second composition root |
 | Were retrieval-affecting thresholds changed honestly? | ✅ Measured first, changed in their own commit, reasoning in the commit body |
 
-## Stretch, for Practice 05
+## Stretch, for Practices 04 and 05
 
-Four of the 25 questions defeat word overlap entirely. Which of hybrid search, reranking, or
-better chunking closes them — and what does each cost in latency and complexity per point of
-recall? The gate is now sensitive enough to answer that with numbers instead of opinions.
+**The gate is now saturated, and that is a problem worth naming.** Dense retrieval scores a
+perfect 1.000 recall@3, so the suite can currently detect a regression but cannot demonstrate
+an improvement: hybrid search and reranking have no headroom to show a lift on this corpus.
+Before Practice 05 can price its upgrades honestly it needs harder evidence — a larger corpus,
+multi-hop questions whose answer spans two documents, near-duplicate documents that force fine
+discrimination, and questions with more than one relevant document so recall stops being
+binary. Growing the golden set that way belongs to Practice 04.
+
+A saturated benchmark flattering the current implementation is the failure mode this practice
+was supposed to teach; catching it on the very next measurement is the lesson landing.
 
 ## What I'd do differently
 
@@ -110,5 +123,6 @@ recall? The gate is now sensitive enough to answer that with numbers instead of 
   kept the lint job slim; it was left as a single dependency set for simplicity, which is a
   trade worth revisiting if CI time becomes annoying.
 - Writing the golden questions before looking at the corpus would have been more honest still.
-  They were paraphrased deliberately, but by the same person who wrote the documents, which is
-  its own kind of bias — Practice 04's synthetic generation should help.
+  They were paraphrased deliberately, but by the same author as the documents, which is its own
+  kind of bias — and a perfect dense score is exactly what that bias would produce. Practice
+  04's synthetic generation and human review should break the circularity.
