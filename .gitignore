@@ -10,6 +10,7 @@ build/
 .env
 
 # Tooling caches
+.fastembed-cache/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/

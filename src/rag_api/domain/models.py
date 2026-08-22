@@ -43,3 +43,39 @@ class GuardVerdict:
 
     allowed: bool
     reason: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class DocumentChunk:
+    """A slice of a source document, ready to be embedded and indexed.
+
+    `document_id` is the *document* it came from — several chunks share
+    one id, which is what citations point at.
+    """
+
+    document_id: str
+    text: str
+    source_path: str
+    chunk_index: int
+    heading_path: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class EmbeddedChunk:
+    """A chunk paired with its vector.
+
+    The vector is a plain sequence of floats: the domain may not import
+    numpy any more than it may import FastAPI.
+    """
+
+    chunk: DocumentChunk
+    vector: tuple[float, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SourceDocument:
+    """A document before chunking: what an ingest run reads from a corpus."""
+
+    document_id: str
+    source_path: str
+    text: str
