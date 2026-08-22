@@ -30,8 +30,17 @@ jobs:
       - name: Tests
         run: uv run pytest
 
+      - name: Cache embedding model
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.fastembed-cache
+          key: fastembed-bge-small-en-v1.5
+
       - name: Retrieval evals
-        run: uv run pytest -m eval
+        env:
+          FASTEMBED_CACHE_PATH: ${{ github.workspace }}/.fastembed-cache
+          RAG_API_EVAL_REQUIRE_DENSE: "1"
+        run: uv run pytest -m eval -s
 
   integration:
     runs-on: ubuntu-latest

@@ -11,15 +11,20 @@ pass; the numbers and their margins are recorded in the practice log.
 """
 
 import json
+import os
 from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
+from qdrant_client import AsyncQdrantClient
 
+from rag_api.adapters.fastembed_embedder import FastEmbedEmbedder
 from rag_api.adapters.in_memory_retriever import InMemoryRetriever
 from rag_api.adapters.markdown_corpus import load_markdown_documents
+from rag_api.adapters.qdrant_store import QdrantChunkIndex, QdrantRetriever
 from rag_api.application.chunking import chunk_markdown
+from rag_api.application.ingest_corpus import IngestCorpus
 from rag_api.domain.models import DocumentChunk
 from rag_api.ports.retriever import Retriever
 
@@ -31,6 +36,17 @@ K = 3
 # recall@3 = 0.840, MRR = 0.793 over 25 questions and 31 chunks.
 TERM_OVERLAP_RECALL_THRESHOLD = 0.80
 TERM_OVERLAP_MRR_THRESHOLD = 0.75
+
+# PROVISIONAL. The embedding model cannot be downloaded in every
+# environment, so these were not measured before being written: they are
+# set low on purpose, below the lexical baseline, so the first run
+# reports real numbers instead of failing on a guess. The follow-up
+# commit replaces them with the observed values.
+DENSE_RECALL_THRESHOLD = 0.60
+DENSE_MRR_THRESHOLD = 0.55
+
+# CI sets this so a missing model fails the gate instead of skipping it.
+REQUIRE_DENSE = os.environ.get("RAG_API_EVAL_REQUIRE_DENSE") == "1"
 
 pytestmark = pytest.mark.eval
 
@@ -128,3 +144,37 @@ async def test_term_overlap_retrieval_meets_thresholds() -> None:
     print(f"\n{metrics.summary('term-overlap')}")
     assert metrics.recall_at_k >= TERM_OVERLAP_RECALL_THRESHOLD, metrics.summary("term-overlap")
     assert metrics.mrr >= TERM_OVERLAP_MRR_THRESHOLD, metrics.summary("term-overlap")
+
+
+def _embedder_or_skip() -> FastEmbedEmbedder:
+    """Build the real embedder, or skip where its weights cannot be fetched."""
+    try:
+        return FastEmbedEmbedder()
+    except Exception as exc:  # any failure here means "no usable model"
+        if REQUIRE_DENSE:
+            raise
+        pytest.skip(f"embedding model unavailable ({type(exc).__name__}): {exc}")
+
+
+async def test_dense_retrieval_meets_thresholds() -> None:
+    """The same golden set, answered by embeddings instead of word overlap.
+
+    Indexing runs through the real ingest pipeline into Qdrant's embedded
+    local mode, so this measures the shipped chunker, embedder and
+    retriever without needing a server.
+    """
+    embedder = _embedder_or_skip()
+    client = AsyncQdrantClient(":memory:")
+    try:
+        index = QdrantChunkIndex(client, collection="eval_chunks")
+        await IngestCorpus(index, embedder).execute(load_markdown_documents(CORPUS_PATH))
+        retriever = QdrantRetriever(client, embedder, collection="eval_chunks")
+        metrics = await measure(retriever, load_golden_set())
+    finally:
+        await client.close()
+
+    print(f"\n{metrics.summary('dense')}")
+    for miss in metrics.misses:
+        print(f"  miss: {miss}")
+    assert metrics.recall_at_k >= DENSE_RECALL_THRESHOLD, metrics.summary("dense")
+    assert metrics.mrr >= DENSE_MRR_THRESHOLD, metrics.summary("dense")
