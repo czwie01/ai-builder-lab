@@ -26,29 +26,39 @@ flowchart LR
     subgraph Delivery
         HTTP["FastAPI route<br/>POST /api/v1/answers"]
         CLI["rag-ask CLI"]
+        INGEST["rag-ingest CLI"]
         MCP["MCP tool<br/>(Practice 10)"]
     end
 
     subgraph Core["Application core (no framework imports)"]
         UC["AnswerQuestion<br/>use case"]
+        ING["IngestCorpus<br/>use case"]
         P1(["Retriever<br/>port"])
         P2(["QuestionGuard<br/>port"])
         P3(["AnswerComposer<br/>port"])
+        P4(["TextEmbedder<br/>port"])
+        P5(["ChunkIndex<br/>port"])
     end
 
     subgraph Adapters
-        A1["InMemoryRetriever<br/>→ Qdrant (Practice 02)"]
+        A1["InMemoryRetriever (default)<br/>QdrantRetriever"]
         A2["BasicQuestionGuard<br/>→ policies (Practice 06)"]
         A3["DeterministicComposer<br/>→ LLM, any vendor (Practice 03)"]
+        A4["FastEmbedEmbedder"]
+        A5["QdrantChunkIndex"]
     end
 
     HTTP --> UC
     CLI --> UC
+    INGEST --> ING
     MCP -.-> UC
     UC --> P1 & P2 & P3
+    ING --> P4 & P5
     A1 -.implements.-> P1
     A2 -.implements.-> P2
     A3 -.implements.-> P3
+    A4 -.implements.-> P4
+    A5 -.implements.-> P5
 ```
 
 The same inversion applies to the dev tooling: agent instructions live in the cross-tool
@@ -59,10 +69,20 @@ adapters for one specific coding agent.
 
 ```bash
 uv sync                                       # installs Python 3.13 + deps
-uv run pytest                                 # unit + API tests (offline, no infra)
+uv run pytest                                 # unit + API + adapter tests (offline, no infra)
 uv run pytest -m eval                         # retrieval-quality evals (recall@3, MRR)
 uv run rag-ask "What is a port in hexagonal architecture?"   # use case without HTTP
-uv run uvicorn rag_api.main:app --reload      # serve the API
+uv run uvicorn rag_api.main:app --reload      # serve the API (in-memory retriever)
+```
+
+The default needs no service, no model download and no network. To run the real pipeline:
+
+```bash
+docker compose up -d                          # Qdrant on :6333
+uv run rag-ingest --source evals/corpus --recreate         # chunk, embed, index
+uv run pytest -m integration                  # congruence tests against the server
+export RAG_API_RETRIEVER=qdrant               # now the API and CLI use vector search
+uv run rag-ask "How can I swap a database client without rewriting business logic?"
 ```
 
 ```bash
@@ -90,7 +110,7 @@ retrieval- or generation-affecting change is gated by the eval suite. (Decisions
 | # | Practice | Mission area | Key tech | Status |
 |---|----------|--------------|----------|--------|
 | 01 | [Clean RAG API boundary](docs/practices/practice-01-rag-api-boundary.md) | Software architecture | FastAPI, DI, ports & adapters | ✅ done |
-| 02 | Vector retrieval with Qdrant | Infrastructure | Qdrant, docker-compose, fastembed (offline/CPU), `TextEmbedder` port, structure-aware chunking, payload indexes | ⬜ planned |
+| 02 | [Vector retrieval with Qdrant](docs/practices/practice-02-qdrant-retrieval.md) | Infrastructure | Qdrant, docker-compose, fastembed (offline/CPU), `TextEmbedder` port, structure-aware chunking, payload indexes | ✅ done |
 | 03 | LLM answer generation | AI engineering | Provider-agnostic `AnswerComposer` adapters (Anthropic tool-use, OpenAI strict JSON schema), validation-retry, prompt caching, fallback decorator | ⬜ planned |
 | 04 | Evals as a CI gate | Evals | RAG triad (faithfulness via claim decomposition, answer relevance), `JudgeModel` port, VCR-recorded judge calls for offline CI, golden-set growth | ⬜ planned |
 | 05 | Advanced retrieval | AI engineering | Hybrid search (BM25/miniCOIL + RRF), metadata filtering, `Reranker` port (local + hosted), contextual retrieval, quantization/MRL — each step an eval delta | ⬜ planned |
@@ -118,15 +138,20 @@ src/rag_api/
 ├── ports/         # Protocols the core depends on
 ├── application/   # use cases orchestrating through ports
 ├── adapters/      # concrete implementations (infrastructure lives here)
-├── api/           # FastAPI: schemas, DI wiring, RFC 9457 errors, middleware
-└── cli.py         # same use case, no HTTP
-tests/             # unit (fakes) + API (TestClient) — fully offline
+├── api/           # FastAPI: schemas, DI wiring, RFC 9457 errors, middleware, lifespan
+├── cli.py         # same use case, no HTTP
+└── ingest_cli.py  # rag-ingest: chunk, embed and index a corpus
+tests/             # unit + adapter (Qdrant local mode) + API — fully offline
+tests/integration/ # needs a real Qdrant: `pytest -m integration`
+evals/corpus/      # frozen markdown corpus the gate measures
 evals/             # golden set + retrieval metrics, gated by `pytest -m eval`
+compose.yaml       # local Qdrant
 docs/              # ADRs, practice logs, tool-agnostic workflows
 ```
 
 Key docs: [ADR-001 Hexagonal architecture](docs/adr/ADR-001-hexagonal-architecture.md) ·
 [ADR-002 Tech stack](docs/adr/ADR-002-tech-stack.md) ·
+[ADR-004 Vector retrieval](docs/adr/ADR-004-vector-retrieval.md) ·
 [Practice workflow](docs/workflow/practice-scaffold.md) ·
 [Recommended agent skills](docs/workflow/recommended-skills.md)
 
