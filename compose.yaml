@@ -1,0 +1,18 @@
+# Local Qdrant for development and the integration test tier.
+#   docker compose up -d
+#   RAG_API_RETRIEVER=qdrant uv run rag-ingest --source evals/corpus --recreate
+#
+# The version is pinned to match qdrant-client in pyproject.toml; the
+# hermetic test tier uses the client's embedded local mode instead and
+# needs none of this.
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.19.0
+    ports:
+      - "6333:6333"   # REST
+      - "6334:6334"   # gRPC
+    volumes:
+      - qdrant_storage:/qdrant/storage
+
+volumes:
+  qdrant_storage:
